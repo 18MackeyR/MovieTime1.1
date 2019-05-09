@@ -14,18 +14,19 @@
   </head>
   <body>
       <div id="app">
-          <card v-for="title in results": title="{{movies}}"></card>
-          {{movies}}
+          <card v-bind:title="movies" v-bind:overview="overview" v-bind:imgsrc="baseUrl + imgSize + posterPath"></card>
+          <!-- <card v-bind:title="movies" v-bind:overview="overview" v-bind:imgsrc="baseUrl + imgSize + posterPath"></card> -->
+
       </div>
       <script>
             // var Config = axios.get('https://api.themoviedb.org/3/configuration?api_key=a1e16c90b5c76499831ae72ee78cb216')
             Vue.component('card',{
-              props:['imgsrc','title', 'description'],
+              props:['imgsrc','title','overview'],
               template: `<div class="card" style="width: 18rem;">
                   <img v-bind:src="imgsrc" class="card-img-top" alt="#">
                   <div class="card-body">
                       <h5 class="card-title">{{title}}</h5>
-                      <p class="card-text">{{description}}</p>
+                      <p class="card-text">{{overview}}</p>
                       <a href="#" class="btn btn-primary">Go somewhere</a>
                   </div>
                   </div>`
@@ -33,14 +34,44 @@
           vue = new Vue ({
               el:'#app',
               data:{
-                movies:[],
+                movies: null,
+                overview: null,
+                baseUrl: null,
+                imgSize: null,
+                posterPath: null,
               },
               mounted(){
+                // Movie Title and Poster Path
                   axios
                 .get('https://api.themoviedb.org/3/movie/now_playing?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US&page=1')
                 .then(response => (
-                  this.movies = response.data.results.title))
-              }
+                  this.movies = response.data.results[0].title,
+                  this.posterPath = response.data.results[0].poster_path
+                  ));
+                //   axios
+                //   .get('https://api.themoviedb.org/3/movie/now_playing?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US&page=1')
+                // .then(response => (
+                //   this.movies + response.data.results[1].title,
+                //   this.posterPath = response.data.results[0].poster_path
+                // ));
+                // Overview
+                  axios
+                .get('https://api.themoviedb.org/3/movie/299534?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US')
+                .then(response => (
+                  this.overview = response.data.overview));
+                // Base Url and Image Size
+                  axios
+                .get('https://api.themoviedb.org/3/configuration?api_key=a1e16c90b5c76499831ae72ee78cb216')
+                .then(response => (
+                  this.baseUrl = response.data.images.base_url,
+                  this.imgSize = response.data.images.poster_sizes[4]
+                  ))
+              },
+              // methods: {
+              //    card: function (){
+              //     return document.get
+              //    }
+              // }
           })
           // Api Key: a1e16c90b5c76499831ae72ee78cb216
           // Get Details: https://api.themoviedb.org/3/movie/{movie_id}?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US
