@@ -14,11 +14,11 @@
   </head>
   <body>
       <div id="app">
-          <card imgsrc='#' title='' description=''></card>
+          <card v-for="title in results": title="{{movies}}"></card>
+          {{movies}}
       </div>
       <script>
-            var nowPlaying = axios.get('https://api.themoviedb.org/3/movie/now_playing?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US&page=1')
-            var Config = axios.get('https://api.themoviedb.org/3/configuration?api_key=a1e16c90b5c76499831ae72ee78cb216')
+            // var Config = axios.get('https://api.themoviedb.org/3/configuration?api_key=a1e16c90b5c76499831ae72ee78cb216')
             Vue.component('card',{
               props:['imgsrc','title', 'description'],
               template: `<div class="card" style="width: 18rem;">
@@ -33,9 +33,13 @@
           vue = new Vue ({
               el:'#app',
               data:{
-                items:[
-
-                ],
+                movies:[],
+              },
+              mounted(){
+                  axios
+                .get('https://api.themoviedb.org/3/movie/now_playing?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US&page=1')
+                .then(response => (
+                  this.movies = response.data.results.title))
               }
           })
           // Api Key: a1e16c90b5c76499831ae72ee78cb216
