@@ -14,12 +14,14 @@
   </head>
   <body>
       <div id="app">
-          <card v-bind:title="movies" v-bind:overview="overview" v-bind:imgsrc="baseUrl + imgSize + posterPath"></card>
 
           <!-- <card v-bind:title="movies" v-bind:overview="overview" v-bind:imgsrc="baseUrl + imgSize + posterPath"></card> -->
 
       </div>
       <script>
+        for (i = 0; i < 5; i++) {
+          document.getElementById("app").innerHTML += '<card v-bind:title="movies[0]" v-bind:overview="overview" v-bind:imgsrc="baseUrl + imgSize + posterPath"></card>';
+        }
             // var Config = axios.get('https://api.themoviedb.org/3/configuration?api_key=a1e16c90b5c76499831ae72ee78cb216')
             Vue.component('card',{
               props:['imgsrc','title','overview'],
@@ -35,26 +37,36 @@
           vue = new Vue ({
               el:'#app',
               data:{
-                movies: null,
-                overview: null,
-                baseUrl: null,
-                imgSize: null,
-                posterPath: null,
+                movies:[],
+                overview:[],
+                baseUrl:[],
+                imgSize:[],
+                posterPath:[],
+                movieNum:[0,1,2]
               },
+
+              // Need to use forEach method in order to choose certain movie from API
+              
               mounted(){
                 // Movie Title and Poster Path
-                  axios
-                .get('https://api.themoviedb.org/3/movie/now_playing?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US&page=1')
-                .then(response => (
-                  this.movies = response.data.results[0].title,
-                  this.posterPath = response.data.results[0].poster_path
-                  ));
+                
+
+                  axios.get('https://api.themoviedb.org/3/movie/now_playing?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US&page=1')
+                  .then(response => (
+                  movieindex = response.data.results,
+
+                  this.movies.push(response.data.results[0].title),
+                  this.posterPath.push(response.data.results[0].poster_path)
+                  ))
+                  
                 //   axios
-                //   .get('https://api.themoviedb.org/3/movie/now_playing?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US&page=1')
-                // .then(response => (
-                //   this.movies + response.data.results[1].title,
-                //   this.posterPath = response.data.results[0].poster_path
-                // ));
+                // .get('https://api.themoviedb.org/3/movie/now_playing?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US&page=1')
+                //   .then(response => (
+                //   movieindex = response.data.results,
+                //   this.movies.push(movieindex[i].title),
+                //   this.posterPath.push(movieindex[i].poster_path)
+                //   )),
+
                 // Overview
                   axios
                 .get('https://api.themoviedb.org/3/movie/299534?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US')
@@ -64,16 +76,12 @@
                   axios
                 .get('https://api.themoviedb.org/3/configuration?api_key=a1e16c90b5c76499831ae72ee78cb216')
                 .then(response => (
-                  this.baseUrl = response.data.images.base_url,
-                  this.imgSize = response.data.images.poster_sizes[4]
+                  this.baseUrl.push(response.data.images.base_url),
+                  this.imgSize.push(response.data.images.poster_sizes[4])
                   ))
               },
-              // methods: {
-              //    card: function (){
-              //     return document.get
-              //    }
-              // }
           })
+
           // Api Key: a1e16c90b5c76499831ae72ee78cb216
           // Get Details: https://api.themoviedb.org/3/movie/{movie_id}?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US
           // Now Playing: https://api.themoviedb.org/3/movie/now_playing?api_key=a1e16c90b5c76499831ae72ee78cb216&language=en-US&page=1
